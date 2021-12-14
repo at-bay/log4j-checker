@@ -76,7 +76,7 @@ var logFile = os.Stdout
 var errFile = os.Stderr
 
 func handleJar(path string, ra io.ReaderAt, sz int64) {
-	if verbose {
+	if !quiet {
 		fmt.Fprintf(logFile, "Inspecting %s...\n", path)
 	}
 	zr, err := zip.NewReader(ra, sz)

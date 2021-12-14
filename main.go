@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"github.com/common-nighthawk/go-figure"
 	"log"
 	"os"
 	"os/exec"
@@ -19,7 +20,6 @@ func findDirs(lines []string) []string {
 	for _, line := range lines {
 		matches := re.FindAllString(line, -1)
 		for _, v := range matches {
-			fmt.Println(v)
 			found = append(found, v)
 		}
 	}
@@ -39,13 +39,14 @@ func findJars(lines []string) []string {
 	return jars
 }
 
-func verify() string {
+func verifyJpsInstalled() string {
 	path, err := exec.LookPath("jps")
 	if err != nil {
 		log.Fatal("missing 'jps' command. please install the latest Oracle JDK")
 	}
-
-	fmt.Printf("found 'jps' command at %s\n", path)
+	if !quiet {
+		fmt.Printf("found 'jps' command at %s\n", path)
+	}
 	return path
 }
 
@@ -74,9 +75,7 @@ func runJps(path string) ([]string, error) {
 
 	// Use the scanner to scan the output line by line and log it
 	// It's running in a goroutine so that it doesn't block
-	go func() {
-
-		// Read line by line and process it
+	go func() { // Read line by line and process it
 		for scanner.Scan() {
 			line := scanner.Text()
 			lines = append(lines, line)
@@ -84,7 +83,6 @@ func runJps(path string) ([]string, error) {
 
 		// We're all done, unblock the channel
 		done <- struct{}{}
-
 	}()
 
 	// Start the command and check for errors
@@ -94,14 +92,19 @@ func runJps(path string) ([]string, error) {
 	<-done
 
 	// Wait for the command to finish
-	err = cmd.Wait()
+	if err = cmd.Wait(); err != nil {
+		log.Fatalf("failed reading 'jps' output with error: %v", err)
+	}
+
 	return lines, nil
 }
 
 func findLog4j(root string) {
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			fmt.Fprintf(errFile, "%s: %s\n", path, err)
+			if !quiet {
+				fmt.Fprintf(errFile, "could not scan %s. error is: %s\n", path, err)
+			}
 			return nil
 		}
 		if excludes.Has(path) {
@@ -136,18 +139,20 @@ func findLog4j(root string) {
 }
 
 func main() {
+
 	flag.Var(&excludes, "exclude", "paths to exclude")
-	flag.BoolVar(&verbose, "verbose", false, "log every archive file considered")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
-	flag.BoolVar(&quiet, "quiet", false, "no ouput unless vulnerable")
+	flag.BoolVar(&quiet, "quiet", false, "no output unless vulnerable")
 	flag.BoolVar(&ignore_v1, "ignore-v1", false, "ignore log4j 1.x versions")
 	flag.Parse()
 
 	if !quiet {
+		myFigure := figure.NewColorFigure("At-Bay, Inc.", "", "blue", true)
+		myFigure.Print()
 		fmt.Printf("%s - a simple local log4j vulnerability scanner\n\n", filepath.Base(os.Args[0]))
 	}
 
-	if len(os.Args) < 2 {
+	if len(os.Args) < 1 {
 		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--quiet] [--ignore-v1] [--exclude path] [ paths ... ]\n", os.Args[0])
 		os.Exit(1)
 	}
@@ -163,21 +168,19 @@ func main() {
 		defer f.Close()
 	}
 
-	if !quiet {
-		fmt.Println("\nScan finished")
-	}
-
-	path := verify()
+	path := verifyJpsInstalled()
 	lines, _ := runJps(path)
 	jars := findJars(lines)
 	for _, jar := range jars {
-		fmt.Println(jar)
 		findLog4j(jar)
 	}
 
 	dirs := findDirs(lines)
 	for _, dir := range dirs {
-		fmt.Println(dir)
 		findLog4j(dir)
+	}
+
+	if !quiet {
+		fmt.Println("\nScan finished")
 	}
 }
