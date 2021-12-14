@@ -1,3 +1,4 @@
+```
 Usage of ./log4j-scanner.darwin:
   -exclude value
         paths to exclude
@@ -7,3 +8,4 @@ Usage of ./log4j-scanner.darwin:
         log file to write output to
   -quiet
         no output unless vulnerable
+```
