@@ -182,7 +182,7 @@ func main() {
 	if verbose {
 		myFigure := figure.NewColorFigure("At-Bay, Inc.", "", "blue", true)
 		myFigure.Print()
-		fmt.Printf("%s - a simple local log4j vulnerability scanner\n\n", filepath.Base(os.Args[0]))
+		fmt.Printf("%s - a light, local log4j vulnerability scanner\n\n", filepath.Base(os.Args[0]))
 	}
 
 	if len(os.Args) < 1 {

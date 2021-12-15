@@ -1,9 +1,18 @@
+### Prerequisites
+To automatically scan all running Java processes, you would need an installation of [jps](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jps.html).
+First verify your Java version (from cmd: `java -version`) and install the appropriate JDK using:
+```
+# on Debian/Ubuntu systems
+sudo apt install openjdk-VERSION-jdk-headless
+```
+Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
 
 ### Legal Disclaimer
 This project is made for non-commercial and ethical testing purposes only. Usage of `log4j-scanner` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.
 ### Usage
+To scan all running Java processes, we recommend running the tool as with root permissions:
 ```
-Usage of ./log4j-scanner-amd64-darwin-v1.0.0-alpha.2.bin:
+Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.0-alpha.2.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
