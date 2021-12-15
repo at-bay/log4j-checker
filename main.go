@@ -37,7 +37,7 @@ var (
 	excludes    argsList
 	includes    argsList
 	logFileName string
-	quiet       bool
+	verbose     bool
 	ignoreV1    bool
 )
 
@@ -72,7 +72,7 @@ func verifyJpsInstalled() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if !quiet {
+	if verbose {
 		fmt.Printf("found 'jps' command at %s\n", path)
 	}
 	return path, nil
@@ -129,8 +129,8 @@ func runJps(path string) ([]string, error) {
 func findLog4j(root string) {
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			if !quiet {
-				fmt.Fprintf(errFile, "could not scan %s. error is: %s\n", path, err)
+			if verbose {
+				fmt.Fprintf(errFile, "skipping %s. %s\n", path, err)
 			}
 			return nil
 		}
@@ -170,7 +170,7 @@ func main() {
 	flag.Var(&excludes, "exclude", "path to exclude. example: -exclude PATH [-exclude ANOTHER]")
 	flag.Var(&includes, "include", "path to include. example -include PATH [-include ANOTHER]")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
-	flag.BoolVar(&quiet, "quiet", false, "no output unless vulnerable")
+	flag.BoolVar(&verbose, "verbose", false, "no output unless vulnerable")
 	flag.BoolVar(&ignoreV1, "ignore-v1", false, "ignore log4j 1.x versions")
 	flag.Parse()
 
@@ -179,14 +179,14 @@ func main() {
 		useJps = false
 	}
 
-	if !quiet {
+	if verbose {
 		myFigure := figure.NewColorFigure("At-Bay, Inc.", "", "blue", true)
 		myFigure.Print()
 		fmt.Printf("%s - a simple local log4j vulnerability scanner\n\n", filepath.Base(os.Args[0]))
 	}
 
 	if len(os.Args) < 1 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--quiet] [--ignore-v1] [--exclude path] [ includes ... ]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--ignore-v1] [--exclude path] [ include ... ]\n", os.Args[0])
 		os.Exit(1)
 	}
 
@@ -220,7 +220,7 @@ func main() {
 		findLog4j(path)
 	}
 
-	if !quiet {
+	if verbose {
 		fmt.Println("\nScan finished")
 	}
 }
