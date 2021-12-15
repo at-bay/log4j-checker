@@ -102,11 +102,15 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 			}
 			sum := hex.EncodeToString(hasher.Sum(nil))
 			if desc, ok := vulnVersions[sum]; ok {
+				foundVln = true
+
 				fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 				continue
 			}
 			if ignoreV1 != true {
 				if desc, ok := vulnVersions_v1[sum]; ok {
+					foundVln = true
+
 					fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 					continue
 				}
@@ -118,6 +122,8 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 					continue
 				}
 				if !bytes.Contains(buf, []byte("Invalid JNDI URI - {}")) {
+					foundVln = true
+
 					fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n",
 						path, file.Name, "JndiManager class missing new error message string literal")
 				}

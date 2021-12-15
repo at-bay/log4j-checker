@@ -39,6 +39,7 @@ var (
 	logFileName string
 	verbose     bool
 	ignoreV1    bool
+	foundVln    bool
 )
 
 func findDirs(lines []string) []string {
@@ -221,7 +222,13 @@ func main() {
 	}
 
 	if verbose {
-		fmt.Println("\nScan finished")
+		fmt.Println("\nscan finished.")
+	}
+
+	if foundVln {
+		fmt.Println("\nthe system is vulnerable, please update immediately.\nfor details refer to the blog (https://www.at-bay.com/articles/security-alert-log4j/).")
+	} else if verbose {
+		fmt.Println("\nthe system might not be vulnerable, but we encourage you to verify further with the system vendor\nfor details refer to the blog (https://www.at-bay.com/articles/security-alert-log4j/).")
 	}
 }
 
