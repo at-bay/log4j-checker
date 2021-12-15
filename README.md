@@ -7,9 +7,6 @@ At-Bay is an insurance company designed to help businesses understand and addres
 ### License
 The project is licensed under MIT License.
 
-### Author
-Amit Mor
-
 ### Prerequisites
 To automatically scan all running Java processes, you would need an installation of [jps](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jps.html).
 First verify your Java version (from cmd: `java -version`) and install the appropriate JDK using:
