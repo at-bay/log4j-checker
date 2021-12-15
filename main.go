@@ -13,6 +13,34 @@ import (
 	"strings"
 )
 
+type argsList []string
+
+func (flags *argsList) String() string {
+	return fmt.Sprint(*flags)
+}
+
+func (flags *argsList) Set(value string) error {
+	*flags = append(*flags, value)
+	return nil
+}
+
+func (flags argsList) Has(path string) bool {
+	for _, exclude := range flags {
+		if path == exclude {
+			return true
+		}
+	}
+	return false
+}
+
+var (
+	excludes    argsList
+	includes    argsList
+	logFileName string
+	quiet       bool
+	ignoreV1    bool
+)
+
 func findDirs(lines []string) []string {
 	unix := `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.]+){1,})`
 	re := regexp.MustCompile(unix)
@@ -39,15 +67,15 @@ func findJars(lines []string) []string {
 	return jars
 }
 
-func verifyJpsInstalled() string {
+func verifyJpsInstalled() (string, error) {
 	path, err := exec.LookPath("jps")
 	if err != nil {
-		log.Fatal("missing 'jps' command. please install the latest Oracle JDK")
+		return "", err
 	}
 	if !quiet {
 		fmt.Printf("found 'jps' command at %s\n", path)
 	}
-	return path
+	return path, nil
 }
 
 func runJps(path string) ([]string, error) {
@@ -140,12 +168,17 @@ func findLog4j(root string) {
 }
 
 func main() {
-
-	flag.Var(&excludes, "exclude", "paths to exclude")
+	flag.Var(&excludes, "exclude", "includes to exclude")
+	flag.Var(&includes, "include", "includes to include")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
 	flag.BoolVar(&quiet, "quiet", false, "no output unless vulnerable")
-	flag.BoolVar(&ignore_v1, "ignore-v1", false, "ignore log4j 1.x versions")
+	flag.BoolVar(&ignoreV1, "ignore-v1", false, "ignore log4j 1.x versions")
 	flag.Parse()
+
+	useJps := true
+	if len(includes) > 0 {
+		useJps = false
+	}
 
 	if !quiet {
 		myFigure := figure.NewColorFigure("At-Bay, Inc.", "", "blue", true)
@@ -154,7 +187,7 @@ func main() {
 	}
 
 	if len(os.Args) < 1 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--quiet] [--ignore-v1] [--exclude path] [ paths ... ]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--quiet] [--ignore-v1] [--exclude path] [ includes ... ]\n", os.Args[0])
 		os.Exit(1)
 	}
 
@@ -169,19 +202,34 @@ func main() {
 		defer f.Close()
 	}
 
-	path := verifyJpsInstalled()
-	lines, _ := runJps(path)
-	jars := findJars(lines)
-	for _, jar := range jars {
-		findLog4j(jar)
+	// true, if user did NOT specify -include
+	if useJps {
+		jpsInstallPath, err := verifyJpsInstalled()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, missingJps)
+			os.Exit(1)
+		}
+		jpsOutputLines, _ := runJps(jpsInstallPath)
+		jars := findJars(jpsOutputLines)
+		for _, jar := range jars {
+			findLog4j(jar)
+		}
+		includes = findDirs(jpsOutputLines)
 	}
 
-	dirs := findDirs(lines)
-	for _, dir := range dirs {
-		findLog4j(dir)
+	for _, path := range includes {
+		findLog4j(path)
 	}
 
 	if !quiet {
 		fmt.Println("\nScan finished")
 	}
 }
+
+var missingJps = `
+The 'jps' binary is not installed on your system. You need to either:
+* install a version of Oracle JDK or OpenJDK depending on your current installation (use java -version to find what is your installation): 
+  * official OpenJDK site: https://openjdk.java.net/projects/jdk/
+  * official Oracle site (JDK17): https://docs.oracle.com/en/java/javase/17/install/installation-jdk-linux-platforms.html
+  * DigitalOcean tutorial for installing various OpenJDK versions: https://www.digitalocean.com/community/tags/java?subtype=tutorial&q=openjdk
+* run this with specific directory to scan using the '-include' argument`

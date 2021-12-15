@@ -104,7 +104,7 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 				fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 				continue
 			}
-			if ignore_v1 != true {
+			if ignoreV1 != true {
 				if desc, ok := vulnVersions_v1[sum]; ok {
 					fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 					continue
@@ -136,29 +136,3 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 		}
 	}
 }
-
-type excludeFlags []string
-
-func (flags *excludeFlags) String() string {
-	return fmt.Sprint(*flags)
-}
-
-func (flags *excludeFlags) Set(value string) error {
-	*flags = append(*flags, value)
-	return nil
-}
-
-func (flags excludeFlags) Has(path string) bool {
-	for _, exclude := range flags {
-		if path == exclude {
-			return true
-		}
-	}
-	return false
-}
-
-var excludes excludeFlags
-var verbose bool
-var logFileName string
-var quiet bool
-var ignore_v1 bool
