@@ -136,6 +136,7 @@ func findLog4j(root string) {
 		}
 		return nil
 	})
+	return
 }
 
 func main() {
