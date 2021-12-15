@@ -226,9 +226,9 @@ func main() {
 	}
 
 	if foundVln {
-		fmt.Println("\nthe system is vulnerable, please update immediately.\nfor details refer to the blog (https://www.at-bay.com/articles/security-alert-log4j/).")
+		fmt.Printf("\n%s\n%s", foundVlnMsg, furtherInfoMsg)
 	} else if verbose {
-		fmt.Println("\nthe system might not be vulnerable, but we encourage you to verify further with the system vendor\nfor details refer to the blog (https://www.at-bay.com/articles/security-alert-log4j/).")
+		fmt.Println("\n%s\n%s", noVlnMsg, furtherInfoMsg)
 	}
 }
 
@@ -239,3 +239,7 @@ The 'jps' binary is not installed on your system. You need to either:
   * official Oracle site (JDK17): https://docs.oracle.com/en/java/javase/17/install/installation-jdk-linux-platforms.html
   * DigitalOcean tutorial for installing various OpenJDK versions: https://www.digitalocean.com/community/tags/java?subtype=tutorial&q=openjdk
 * run this with specific directory/ies to scan using the '-include' argument`
+
+var foundVlnMsg = `the system is vulnerable, please update immediately.`
+var noVlnMsg = `the system might not be vulnerable, but we encourage you to verify further with the system vendor.`
+var furtherInfoMsg = `for details refer to the blog (https://www.at-bay.com/articles/security-alert-log4j/).`
