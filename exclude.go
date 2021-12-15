@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// retrieve on MacOS using, for example: shasum -a 256 org/apache/logging/log4j/core/lookup/JndiLookup.class
 var vulnVersions = map[string]string{
 	"39a495034d37c7934b64a9aa686ea06b61df21aa222044cc50a47d6903ba1ca8": "log4j 2.0-rc1",       // JndiLookup.class
 	"a03e538ed25eff6c4fe48aabc5514e5ee687542f29f2206256840e74ed59bcd2": "log4j 2.0-rc2",       // JndiLookup.class

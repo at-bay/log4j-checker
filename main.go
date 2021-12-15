@@ -101,8 +101,7 @@ func runJps(path string) ([]string, error) {
 	// Create a scanner which scans r in a line-by-line fashion
 	scanner := bufio.NewScanner(r)
 
-	// Use the scanner to scan the output line by line and log it
-	// It's running in a goroutine so that it doesn't block
+	// Use the scanner to scan the output line by line and log if it's running in a goroutine so that it doesn't block
 	go func() { // Read line by line and process it
 		for scanner.Scan() {
 			line := scanner.Text()
@@ -168,8 +167,8 @@ func findLog4j(root string) {
 }
 
 func main() {
-	flag.Var(&excludes, "exclude", "includes to exclude")
-	flag.Var(&includes, "include", "includes to include")
+	flag.Var(&excludes, "exclude", "path to exclude. example: -exclude PATH [-exclude ANOTHER]")
+	flag.Var(&includes, "include", "path to include. example -include PATH [-include ANOTHER]")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
 	flag.BoolVar(&quiet, "quiet", false, "no output unless vulnerable")
 	flag.BoolVar(&ignoreV1, "ignore-v1", false, "ignore log4j 1.x versions")
@@ -232,4 +231,4 @@ The 'jps' binary is not installed on your system. You need to either:
   * official OpenJDK site: https://openjdk.java.net/projects/jdk/
   * official Oracle site (JDK17): https://docs.oracle.com/en/java/javase/17/install/installation-jdk-linux-platforms.html
   * DigitalOcean tutorial for installing various OpenJDK versions: https://www.digitalocean.com/community/tags/java?subtype=tutorial&q=openjdk
-* run this with specific directory to scan using the '-include' argument`
+* run this with specific directory/ies to scan using the '-include' argument`
