@@ -27,7 +27,7 @@ Alternatively, specify (multiple pairs of) `--include PATH` argument to scan spe
 This project is made for non-commercial and ethical testing purposes only. Usage of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.
 
 ### Installation
-download a precompiled binary from the [releases page](https://github.com/at-bay/log4j-checker/releases)
+Download the latest precompiled binary from the [releases page](https://github.com/at-bay/log4j-checker/releases)
 or use Golang build tool: `GOOS=linux GOARCH=amd64 go build` from the root of this repository.
 
 ### Usage
