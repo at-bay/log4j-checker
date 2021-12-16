@@ -25,18 +25,8 @@ usage: jps [--help]
        jps [-q] [-mlvV] [<hostid>]
 ...
 ```
-[version]: 1.0.5
-[binary]: https://github.com/at-bay/log4j-checker/releases/download/[version]/log4j-checker-linux-amd64-v[version]
-This means you can proceed to the [installation](#Installation) section below.
+This means you can proceed to the [installation](#Installation) section below and skip the OpenJDK installation step straight to [downloading](#MyHeading) the `log4j-checker`.
 
-If `jps` is not installed that means that JDK is not installed, and you would need to download OpenJDK [binary].
-The below instructions do not install OpenJDK, but download and extract a prepared OpenJDK file and use it for the sole use of the `log4j-checker` tool. Feel free to delete the downloaded and extracted OpenJDK directory when you're done.
-```shell
-wget -L https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz -O OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
-tar xzf OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
-wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.5/log4j-checker-linux-amd64-v[version].bin -O log4j-checker-linux-amd64-v1.0.5.bin
-
-```
 
 
 * verify your Java version (from cmd: `java -version`) 
@@ -51,13 +41,26 @@ This project is made for non-commercial and ethical testing purposes only, and i
 Use of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. At-Bay assumes no liability and is not responsible for any misuse or damage caused by this program.
 
 ### Installation
-Download the latest precompiled binary from the [releases page](https://github.com/at-bay/log4j-checker/releases)
-or use Golang build tool: `GOOS=linux GOARCH=amd64 go build` from the root of this repository.
+#### Download OpenJDK and extract
+If `jps` is not installed that means that JDK is not installed, and you would need to download OpenJDK.
+
+The below instructions do not install OpenJDK, but download and extract a prepared OpenJDK file and use it for the sole use of the `log4j-checker` tool. Feel free to delete the downloaded and extracted OpenJDK directory when you're done.
+```shell
+# for other versions and more instructions checkout: https://adoptopenjdk.net/installation.html
+wget -L https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz -O OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
+tar xzf OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
+export PATH=$PWD/jdk-16.0.2+7/bin:$PATH
+```
+#### <a id="MyHeading"></a> Download the latest log4j-checker
+```shell
+wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.6/log4j-checker-linux-amd64-v1.0.6.bin -O log4j-checker-linux-amd64-v1.0.6.bin
+chmod +x log4j-checker-linux-amd64-v1.0.6.bin
+```
 
 ### Usage
 To scan all running Java processes, we recommend running the tool as with root permissions:
 ```
-Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.5.bin:
+Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.6.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
