@@ -35,11 +35,11 @@ Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.3.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
-        ignore log4j 1.x versions
+        ignore log4j 1.x versions checks
   -include value
-        path to include. example -include PATH [-include ANOTHER]
+        path to include. example: -include PATH [-include ANOTHER]
   -log string
         log file to write output to
   -verbose
-        no output unless vulnerable
+        verbose output. without this flag, no output unless vulnerable
 ```
