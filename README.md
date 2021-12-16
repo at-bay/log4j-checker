@@ -15,7 +15,7 @@ The project is licensed under MIT License.
 * freebsd/darwin (MacOS) (amd64)
 
 ### Prerequisites
-To automatically scan the system running Java processes, you would need an installation of the *Java Development Kit (JDK)* that packs the `jps` command-line tool. If you don't or can't install JDK on your system, you can still run the checker tool in manual mode as described below. 
+To automatically scan the system running Java processes, you would need an installation of the *Java Development Kit (JDK)* that packs the `jps` command-line tool. If you don't or can't install JDK on your system, you can still run the checker tool in manual mode as [described below](#Usage). 
 
 #### Auto detection mode:
 To find out if `jps` is installed on your system simply issue the command `jps -h` on the target system terminal.
@@ -26,7 +26,7 @@ usage: jps [--help]
 ...
 ```
 
-This means you can proceed to installation section below.
+This means you can proceed to the [installation](#Installation) section below.
 
 If `jps` is not installed that means that JDK is not installed, and you would need to install an OpenJDK version that is identical to the Java (JRE) version installed on your system.
 
