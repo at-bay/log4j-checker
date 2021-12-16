@@ -43,3 +43,6 @@ Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.3.bin:
   -verbose
         verbose output. without this flag, no output unless vulnerable
 ```
+
+### Issues
+Please report issues in the project [issues page](https://github.com/at-bay/log4j-checker/issues).
