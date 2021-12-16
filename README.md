@@ -31,7 +31,7 @@ or use Golang build tool: `GOOS=linux GOARCH=amd64 go build` from the root of th
 ### Usage
 To scan all running Java processes, we recommend running the tool as with root permissions:
 ```
-Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.2.bin:
+Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.3.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
