@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ### Description
 `log4j-checker` tool helps identify whether a certain system runs a vulnerable version of the log4j library. Download it and run on each suspected system in your organization.
 Please refer to the usage section for more details.
