@@ -31,7 +31,7 @@ This means you can proceed to the [installation](#Installation) section below.
 If `jps` is not installed that means that JDK is not installed, and you would need to install an OpenJDK version that is identical to the Java (JRE) version installed on your system.
 Instead of following the text instruction below, you can copy-paste from the asciinema console video:
 
-[![asciicast](https://asciinema.org/a/4laqFVjDJ4NcWi8YJIW3fFgrG.svg)](https://asciinema.org/a/4laqFVjDJ4NcWi8YJIW3fFgrG)
+[![asciicast](https://asciinema.org/a/ZDr0BfaYkkdnQOKQuic0iasmM.svg)](https://asciinema.org/a/ZDr0BfaYkkdnQOKQuic0iasmM)
 
 ... or follow this: 
 * verify your Java version (from cmd: `java -version`) 
