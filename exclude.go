@@ -143,3 +143,7 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 		}
 	}
 }
+
+func isVln() bool {
+	return foundVln
+}

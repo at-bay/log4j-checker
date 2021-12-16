@@ -1,6 +1,12 @@
 package main
 
-import "testing"
+import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"testing"
+)
 
 func TestFindingJars(t *testing.T) {
 	lines := getJpsLines()
@@ -18,8 +24,15 @@ func TestFindingJars(t *testing.T) {
 }
 
 func TestLog4J(t *testing.T) {
-	path := "/DirA/DirB/.m2/repository/org/apache/logging/log4j"
-	findLog4j(path)
+	cwd, _ := os.Getwd()
+	path := fmt.Sprintf("%s/%s", cwd, "assets/log4j-core-2.14.0.jar")
+	file, _ := os.Open(path)
+	defer file.Close()
+	buf, _ := ioutil.ReadAll(file)
+	handleJar("", bytes.NewReader(buf), int64(len(buf)))
+	if !isVln() {
+		t.Error("should have detected vulnerability")
+	}
 }
 
 func TestParseDirs(t *testing.T) {
