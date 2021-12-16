@@ -43,29 +43,67 @@ var (
 )
 
 func findDirs(lines []string) []string {
-	unix := `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.]+){1,})`
-	re := regexp.MustCompile(unix)
-	var found []string
+	dirRe := `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.\-]+){1,})`
+	compiledDirRe := regexp.MustCompile(dirRe)
+
+	javaParamRe := `(-[A-Zֿֿֿֿֿֿֿ\:]+(\w+\.*)+[=\:]*)`
+	compiledJavaParamRe := regexp.MustCompile(javaParamRe)
+
+	javaagentRe := `-javaagent\:.*?=\d+\:`
+	compiledJavaAgentRe := regexp.MustCompile(javaagentRe)
+
+	found := map[string]interface{}{}
 	for _, line := range lines {
-		matches := re.FindAllString(line, -1)
+		matches := compiledJavaParamRe.Split(line, -1)
 		for _, v := range matches {
-			found = append(found, v)
+			// handle javaagent param which might point to a lib/bin
+			if compiledJavaAgentRe.MatchString(v) {
+				javaAgentSplitted := compiledJavaAgentRe.Split(v, -1)
+				if len(javaAgentSplitted) > 1 {
+					// take the last element
+					v = javaAgentSplitted[len(javaAgentSplitted)-1]
+				}
+			}
+			if compiledDirRe.MatchString(v) {
+				stripped := strings.Trim(v, " ")
+				if len(stripped) > 0 {
+					found[stripped] = nil
+				}
+			}
 		}
 	}
-	return found
+	distinct := mapKeysToSlice(found)
+
+	return distinct
+}
+
+func mapKeysToSlice(m map[string]interface{}) []string {
+	var keys []string //nolint:prealloc
+	for key := range m {
+		keys = append(keys, key)
+	}
+
+	return keys
 }
 
 func findJars(lines []string) []string {
-	re := regexp.MustCompile(`(/.*?.jar)`)
+	unixJarRe := `((?:/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
+	re := regexp.MustCompile(unixJarRe)
 
-	var jars []string
+	found := map[string]interface{}{}
 	for _, line := range lines {
+		line = strings.ReplaceAll(line, "javaagent:", "")
 		matches := re.FindAllString(line, -1)
 		for _, v := range matches {
-			jars = append(jars, v)
+			stripped := strings.Trim(v, " ")
+			if len(stripped) > 0 {
+				found[stripped] = nil
+			}
 		}
 	}
-	return jars
+	distinct := mapKeysToSlice(found)
+
+	return distinct
 }
 
 func verifyJpsInstalled() (string, error) {
