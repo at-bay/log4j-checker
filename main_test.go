@@ -13,7 +13,7 @@ func TestFindingJars(t *testing.T) {
 	found := findJars(lines)
 	expected := []string{
 		"/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar",
-		"target/log4j-checkout-1.0-SNAPSHOT.jar",
+		"target/log4j-checkout-1.0-SNAPSHOT.jar", "log4j-checkout-1.0-SNAPSHOT.jar",
 	}
 	for _, item := range expected {
 		_, exists := Find(found, item)
@@ -56,7 +56,8 @@ func getJpsLines() []string {
 	line5 := `39142 jdk.jcmd/sun.tools.jps.Jps -Dapplication.home=/Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Home -Xms8m -Djdk.module.main=jdk.jcmd`
 	line6 := `41946 target/log4j-checkout-1.0-SNAPSHOT.jar`
 	line7 := `20635 org.apache.catalina.startup.Bootstrap --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED -Djava.util.logging.config.file=/var/lib/tomcat9/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.awt.headless=true -XX:+UseG1GC -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -Dcatalina.base=/var/lib/tomcat9 -Dcatalina.home=/usr/share/tomcat9 -Djava.io.tmpdir=/tmp`
-	lines := []string{line, line1, line2, line3, line4, line5, line6, line7}
+	line8 := `41946 log4j-checkout-1.0-SNAPSHOT.jar`
+	lines := []string{line, line1, line2, line3, line4, line5, line6, line7, line8}
 	return lines
 }
 

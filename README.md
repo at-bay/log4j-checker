@@ -14,10 +14,15 @@ The project is licensed under MIT License.
 * linux (amd64)
 * freebsd/darwin (MacOS) (amd64)
 
-### Prerequisites
-To automatically scan the system running Java processes, you would need an installation of the *Java Development Kit (JDK)* that packs the `jps` command-line tool. If you don't or can't install JDK on your system, you can still run the checker tool in manual mode as [described below](#Usage). 
+### Legal Disclaimer
+This project is made for non-commercial and ethical testing purposes only, and is offered as-is, without warranty. 
 
-#### Auto detection mode:
+Use of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. At-Bay assumes no liability and is not responsible for any misuse or damage caused by this program.
+
+
+### Prerequisites
+To automatically scan the system running Java processes, you would need an installation of the *Open Java Development Kit (OpenJDK)* that packs the `jps` command-line tool. If you don't or can't install OpenJDK on your system, you can still run the checker tool in manual mode as [described below](#Usage).
+
 To find out if `jps` is installed on your system simply issue the command `jps -h` on the target system terminal.
 If `jps` is installed you would be returned with something similar to:
 ```shell
@@ -26,19 +31,6 @@ usage: jps [--help]
 ...
 ```
 This means you can proceed to the [installation](#Installation) section below and skip the OpenJDK installation step straight to [downloading](#MyHeading) the `log4j-checker`.
-
-
-
-* verify your Java version (from cmd: `java -version`) 
-* then install an appropriate JDK using [AdoptOpenJDK binaries](https://adoptopenjdk.net/installation.html) (recommended) or with any other tool
-
-#### Manual detection on selected paths:
-Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
-
-### Legal Disclaimer
-This project is made for non-commercial and ethical testing purposes only, and is offered as-is, without warranty. 
-
-Use of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. At-Bay assumes no liability and is not responsible for any misuse or damage caused by this program.
 
 ### Installation
 #### Download OpenJDK and extract
@@ -58,7 +50,7 @@ chmod +x log4j-checker-linux-amd64-v1.0.6.bin
 ```
 
 ### Usage
-To scan all running Java processes, we recommend running the tool as with root permissions:
+To scan *all* running Java processes, we recommend running the tool with root permissions:
 ```
 Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.6.bin:
   -exclude value

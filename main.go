@@ -87,13 +87,24 @@ func mapKeysToSlice(m map[string]interface{}) []string {
 }
 
 func findJars(lines []string) []string {
-	unixJarRe := `((?:/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
+	unixJarRe := `((?:\.?/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
+	unixJarRe1 := `[\w\-\.^/]+.[jwe]ar`
+	//unixJarRe := `(?:\.?/\w+.*?.[jwe]ar)`
 	re := regexp.MustCompile(unixJarRe)
+	re1 := regexp.MustCompile(unixJarRe1)
 
 	found := map[string]interface{}{}
 	for _, line := range lines {
 		line = strings.ReplaceAll(line, "javaagent:", "")
 		matches := re.FindAllString(line, -1)
+		for _, v := range matches {
+			stripped := strings.Trim(v, " ")
+			if len(stripped) > 0 {
+				found[stripped] = nil
+			}
+		}
+		// brute force matching
+		matches = re1.FindAllString(line, -1)
 		for _, v := range matches {
 			stripped := strings.Trim(v, " ")
 			if len(stripped) > 0 {
