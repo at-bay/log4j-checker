@@ -30,9 +30,9 @@ This means you can proceed to the [installation](#Installation) section below.
 
 If `jps` is not installed that means that JDK is not installed, and you would need to install an OpenJDK version that is identical to the Java (JRE) version installed on your system.
 
-First verify your Java version (from cmd: `java -version`) and then install an appropriate JDK: e.g. `sudo apt install openjdk-VERSION-jdk-headless`
+First verify your Java version (from cmd: `java -version`) and then install an appropriate JDK with something like `sudo apt install openjdk-VERSION-jdk-headless`
 
-It is recommended to use the [AdoptOpenJDK binaries](https://adoptopenjdk.net/installation.html)  as they are prebuilt JDKs suitable for Linux, Mac and Windows supporting various CPU architectures.
+or using [AdoptOpenJDK binaries](https://adoptopenjdk.net/installation.html) as they are prebuilt JDKs suitable for Linux, Mac and Windows supporting various CPU architectures.
 
 #### Manual detection on selected paths:
 Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
