@@ -1,11 +1,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ### Description
-`log4j-checker` tool helps identify whether a certain system runs a vulnerable version of the log4j library. Download it and run on each suspected system in your organization.
-Please refer to the usage section for more details.
+`log4j-checker` tool helps identify whether a certain system is running a vulnerable version of the log4j library. Download and run the tool on each suspected system in your organization. Please refer to the usage section for more details.
+This cli tool will try to locate java processes that are using a vulnerable version of log4j library and provide an indication if found.
 
 ### About At-Bay
-At-Bay is an insurance company designed to help businesses understand and address digital risk by combining world-class technology with industry-leading insurance expertise. We question, analyze, and monitor the risk of every company in our portfolio and support our brokers and our insureds throughout our partnership.
+At-Bay is an insurance provider founded by security experts specifically to address cyber risk.
 
 ### License
 The project is licensed under MIT License.
@@ -24,7 +24,9 @@ sudo apt install openjdk-VERSION-jdk-headless
 Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
 
 ### Legal Disclaimer
-This project is made for non-commercial and ethical testing purposes only. Usage of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.
+This project is made for non-commercial and ethical testing purposes only, and is offered as-is, without warranty. 
+
+Use of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. At-Bay assumes no liability and is not responsible for any misuse or damage caused by this program.
 
 ### Installation
 Download the latest precompiled binary from the [releases page](https://github.com/at-bay/log4j-checker/releases)
