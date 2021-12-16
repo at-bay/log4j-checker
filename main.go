@@ -41,17 +41,18 @@ var (
 	ignoreV1    bool
 	foundVln    bool
 )
+var (
+	dirRe         = `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.\-]+){1,})`
+	compiledDirRe = regexp.MustCompile(dirRe)
+
+	javaParamRe         = `(-[A-Zֿֿֿֿֿֿֿ\:]+(\w+\.*)+[=\:]*)`
+	compiledJavaParamRe = regexp.MustCompile(javaParamRe)
+
+	javaagentRe         = `-javaagent\:.*?=\d+\:`
+	compiledJavaAgentRe = regexp.MustCompile(javaagentRe)
+)
 
 func findDirs(lines []string) []string {
-	dirRe := `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.\-]+){1,})`
-	compiledDirRe := regexp.MustCompile(dirRe)
-
-	javaParamRe := `(-[A-Zֿֿֿֿֿֿֿ\:]+(\w+\.*)+[=\:]*)`
-	compiledJavaParamRe := regexp.MustCompile(javaParamRe)
-
-	javaagentRe := `-javaagent\:.*?=\d+\:`
-	compiledJavaAgentRe := regexp.MustCompile(javaagentRe)
-
 	found := map[string]interface{}{}
 	for _, line := range lines {
 		matches := compiledJavaParamRe.Split(line, -1)
@@ -86,17 +87,19 @@ func mapKeysToSlice(m map[string]interface{}) []string {
 	return keys
 }
 
-func findJars(lines []string) []string {
-	unixJarRe := `((?:\.?/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
-	unixJarRe1 := `[\w\-\.^/]+.[jwe]ar`
-	//unixJarRe := `(?:\.?/\w+.*?.[jwe]ar)`
-	re := regexp.MustCompile(unixJarRe)
-	re1 := regexp.MustCompile(unixJarRe1)
+var (
+	unixJarRe         = `((?:\.?/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
+	compiledUnixJarRe = regexp.MustCompile(unixJarRe)
 
+	unixJarRe1         = `[\w\-\.^/]+.[jwe]ar`
+	compiledUnixJarRe1 = regexp.MustCompile(unixJarRe1)
+)
+
+func findJars(lines []string) []string {
 	found := map[string]interface{}{}
 	for _, line := range lines {
-		line = strings.ReplaceAll(line, "javaagent:", "")
-		matches := re.FindAllString(line, -1)
+		line = strings.ReplaceAll(line, "-javaagent:", "")
+		matches := compiledUnixJarRe.FindAllString(line, -1)
 		for _, v := range matches {
 			stripped := strings.Trim(v, " ")
 			if len(stripped) > 0 {
@@ -104,7 +107,7 @@ func findJars(lines []string) []string {
 			}
 		}
 		// brute force matching
-		matches = re1.FindAllString(line, -1)
+		matches = compiledUnixJarRe1.FindAllString(line, -1)
 		for _, v := range matches {
 			stripped := strings.Trim(v, " ")
 			if len(stripped) > 0 {
