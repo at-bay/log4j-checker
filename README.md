@@ -25,10 +25,19 @@ usage: jps [--help]
        jps [-q] [-mlvV] [<hostid>]
 ...
 ```
-
+[version]: 1.0.5
+[binary]: https://github.com/at-bay/log4j-checker/releases/download/[version]/log4j-checker-linux-amd64-v[version]
 This means you can proceed to the [installation](#Installation) section below.
 
-If `jps` is not installed that means that JDK is not installed, and you would need to install an OpenJDK version that is identical to the Java (JRE) version installed on your system.
+If `jps` is not installed that means that JDK is not installed, and you would need to download OpenJDK [binary].
+The below instructions do not install OpenJDK, but download and extract a prepared OpenJDK file and use it for the sole use of the `log4j-checker` tool. Feel free to delete the downloaded and extracted OpenJDK directory when you're done.
+```shell
+wget -L https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz -O OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
+tar xzf OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
+wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.5/log4j-checker-linux-amd64-v[version].bin -O log4j-checker-linux-amd64-v1.0.5.bin
+
+```
+
 
 * verify your Java version (from cmd: `java -version`) 
 * then install an appropriate JDK using [AdoptOpenJDK binaries](https://adoptopenjdk.net/installation.html) (recommended) or with any other tool
