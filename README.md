@@ -15,12 +15,26 @@ The project is licensed under MIT License.
 * freebsd/darwin (MacOS) (amd64)
 
 ### Prerequisites
-To automatically scan all running Java processes, you would need an installation of [jps](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jps.html).
-First verify your Java version (from cmd: `java -version`) and install the appropriate JDK using:
+To automatically scan the system running Java processes, you would need an installation of the *Java Development Kit (JDK)* that packs the `jps` command-line tool. If you don't or can't install JDK on your system, you can still run the checker tool in manual mode as described below. 
+
+#### Auto detection mode:
+To find out if `jps` is installed on your system simply issue the command `jps -h` on the target system terminal.
+If `jps` is installed you would be returned with something similar to:
+```shell
+usage: jps [--help]
+       jps [-q] [-mlvV] [<hostid>]
+...
 ```
-# on Debian/Ubuntu systems
-sudo apt install openjdk-VERSION-jdk-headless
-```
+
+This means you can proceed to installation section below.
+
+If `jps` is not installed that means that JDK is not installed, and you would need to install an OpenJDK version that is identical to the Java (JRE) version installed on your system.
+
+First verify your Java version (from cmd: `java -version`) and then install an appropriate JDK: e.g. `sudo apt install openjdk-VERSION-jdk-headless`
+
+It is recommended to use the [AdoptOpenJDK binaries](https://adoptopenjdk.net/installation.html)  as they are prebuilt JDKs suitable for Linux, Mac and Windows supporting various CPU architectures.
+
+#### Manual detection on selected paths:
 Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
 
 ### Legal Disclaimer
