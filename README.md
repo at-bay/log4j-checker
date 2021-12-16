@@ -22,7 +22,7 @@ sudo apt install openjdk-VERSION-jdk-headless
 Alternatively, specify (multiple pairs of) `--include PATH` argument to scan specific directories but not the currently running Java processes
 
 ### Legal Disclaimer
-This project is made for non-commercial and ethical testing purposes only. Usage of `log4j-scanner` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.
+This project is made for non-commercial and ethical testing purposes only. Usage of `log4j-checker` for attacking targets is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program.
 
 ### Installation
 download a precompiled binary from the [releases page](https://github.com/at-bay/log4j-checker/releases)
