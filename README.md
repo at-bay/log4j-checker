@@ -46,13 +46,13 @@ export PATH=$PWD/jdk-16.0.2+7/bin:$PATH
 #### <a id="MyHeading"></a> Download the latest log4j-checker
 ```shell
 wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.8/log4j-checker-linux-amd64-v1.0.8.bin -O log4j-checker-linux-amd64-v1.0.8.bin
-chmod +x log4j-checker-linux-amd64-vv1.0.8.bin
+chmod +x log4j-checker-linux-amd64-v1.0.8.bin
 ```
 
 ### Usage
 To scan *all* running Java processes, we recommend running the tool with root permissions:
 ```
-Usage of sudo ./log4j-scanner-amd64-darwin-vv1.0.8.bin:
+Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.8.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
