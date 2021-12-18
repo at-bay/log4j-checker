@@ -23,15 +23,27 @@ func TestFindingJars(t *testing.T) {
 	}
 }
 
-func TestLog4J(t *testing.T) {
+func TestLog4J2_14_0(t *testing.T) {
 	cwd, _ := os.Getwd()
-	path := fmt.Sprintf("%s/%s", cwd, "assets/log4j-core-2.14.0.jar")
+	path := fmt.Sprintf("%s/%s", cwd, "testdata/log4j-core-2.14.0.jar")
 	file, _ := os.Open(path)
 	defer file.Close()
 	buf, _ := ioutil.ReadAll(file)
 	handleJar("", bytes.NewReader(buf), int64(len(buf)))
 	if !isVln() {
 		t.Error("should have detected vulnerability")
+	}
+}
+
+func TestLog4J2_17_0(t *testing.T) {
+	cwd, _ := os.Getwd()
+	path := fmt.Sprintf("%s/%s", cwd, "testdata/log4j-core-2.17.0.jar")
+	file, _ := os.Open(path)
+	defer file.Close()
+	buf, _ := ioutil.ReadAll(file)
+	handleJar("", bytes.NewReader(buf), int64(len(buf)))
+	if isVln() {
+		t.Error("should have not detected vulnerability")
 	}
 }
 
