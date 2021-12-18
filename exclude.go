@@ -23,6 +23,7 @@ var vulnVersions = map[string]string{
 	"03c77cca9aeff412f46eaf1c7425669e37008536dd52f1d6f088e80199e4aae7": "log4j 2.4-2.11.2",    // JndiManager$1.class
 	"1584b839cfceb33a372bb9e6f704dcea9701fa810a9ba1ad3961615a5b998c32": "log4j 2.7-2.8.1",     // JndiManager.class
 	"1fa92c00fa0b305b6bbe6e2ee4b012b588a906a20a05e135cbe64c9d77d676de": "log4j 2.12.0-2.12.1", // JndiManager.class
+	"b1960d63a3946f9e16e1920624f37c152b58b98932ed04df99ed5d9486732afb": "log4j 2.12.2",        // JndiManager.class
 	"293d7e83d4197f0496855f40a7745cfcdd10026dc057dfc1816de57295be88a6": "log4j 2.9.0-2.11.2",  // JndiManager.class
 	"3bff6b3011112c0b5139a5c3aa5e698ab1531a2f130e86f9e4262dd6018916d7": "log4j 2.4-2.5",       // JndiManager.class
 	"547883afa0aa245321e6b1aaced24bc10d73d5af4974d951e2bd53b017e2d4ab": "log4j 2.14.0-2.14.1", // JndiManager$JndiManagerFactory.class
@@ -50,7 +51,7 @@ var vulnVersions = map[string]string{
 	"a3a65f2c5bc0dd62df115a0d9ac7140793c61b65bbbac313a526a3b50724a8c7": "log4j 2.8.2",         // MessagePatternConverter.class
 	"ee41ae7ae80f5c533548a89c6d6e112df609c838b901daea99ac88ccda2a5da1": "log4j 2.7",           // MessagePatternConverter.class
 	"f0a869f7da9b17d0a23d0cb0e13c65afa5e42e9567b47603a8fc0debc7ef193c": "log4j 2.14",          // MessagePatternConverter.class
-	"84057480ba7da6fb6d9ea50c53a00848315833c1f34bf8f4a47f11a14499ae3f": "log4j 2.15.0",        // JndiManager.class
+	"84057480ba7da6fb6d9ea50c53a00848315833c1f34bf8f4a47f11a14499ae3f": "log4j 2.15-2.16",     // JndiManager.class
 	"f8baca973f1874b76cfaed0f4c17048b1ac0dee364abfdfeeec62de3427def50": "log4j 2.0-rc1",       // MessagePatternConverter.class
 
 	"ce69c1ea49c60f3be90cb9c86d7220af86e5d2fbc08fd7232da7278926e4f881": "log4j 2.0-alpha1/alpha2/beta1", // MessagePatternConverter.class
