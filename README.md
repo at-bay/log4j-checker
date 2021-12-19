@@ -29,9 +29,9 @@ If no Java runtime is present, you can proceed to another machine.
 ### Installation
 
 #### OpenJDK
-To automatically scan the system' running Java processes (using the packaged `jps` program), `log4j-checker` tool downloads and extracts OpenJDK17.
+To automatically scan the system' running Java processes, `log4j-checker` downloads and extracts OpenJDK17.
 If you don't want this behaviour, either:
-* Run `log4j-checker` with the arg `--no-jps-download` to avoid the download and extract and have `jps` available in your `$PATH` (manually, on your own) 
+* Run `log4j-checker` with the arg `--no-jps-download` to avoid the download and extract. In that case `log4j-checker` expects to have `jps` (a tool that is part of OpenJDK) available in your `$PATH` 
 * Run `log4j-checker` with the arg(s) `-include PATH` to not automatically detect the running Java process and provide a manual path to scan.
 
 #### <a id="MyHeading"></a> Download Latest `log4j-checker`
