@@ -21,9 +21,15 @@ Use of `log4j-checker` for attacking targets is illegal. It is the end user's re
 
 
 ### Prerequisites
-To automatically scan the system running Java processes, you would need *Open Java Development Kit (OpenJDK)* that packs the `jps` command-line tool, available on your `$PATH`. If you don't want or can't install OpenJDK on your system, you can still run the checker tool in manual mode as [described below](#Usage).
+#### Java
+The log4j vulnerabilities are only relevant, in general, to machines running Java processes.
+To know if Java runtime is installed on the machine at question, open terminal and hit (as root): `java -version`.
+If no Java runtime is present, you can proceed to another machine.
 
-To find out if `jps` is installed on your system simply issue the command `jps -h` on the target system terminal.
+#### OpenJDK
+To automatically scan the system running Java processes, you would need *Open Java Development Kit (OpenJDK)* that packs the `jps` command-line tool, to be available on your `$PATH`. If you don't want to or can't install OpenJDK on your system, you can still run the checker tool in manual mode as [described below](#Usage).
+
+To find out if `jps` is present on your system, simply issue the command `jps -h` on the target machine's terminal.
 If `jps` is installed you would be returned with something similar to:
 ```shell
 usage: jps [--help]
@@ -33,7 +39,7 @@ usage: jps [--help]
 This means you can proceed to the [installation](#Installation) section below and skip the OpenJDK installation step straight to [downloading](#MyHeading) the `log4j-checker`.
 
 ### Installation
-#### Download OpenJDK and extract
+#### Download & Extract OpenJDK
 If `jps` is not installed that means that OpenJDK is not available on your `$PATH`, and you would need to download OpenJDK.
 
 The below instructions *do not* install OpenJDK (as there is no need for actual installation), but download and extract a prepared OpenJDK binary and use it for the sole use of the `log4j-checker` tool. Feel free to delete the downloaded and extracted OpenJDK directory when you're done.
@@ -43,14 +49,14 @@ wget -L https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.
 tar xzf OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
 export PATH=$PWD/jdk-16.0.2+7/bin:$PATH
 ```
-#### <a id="MyHeading"></a> Download the latest log4j-checker
+#### <a id="MyHeading"></a> Download Latest `log4j-checker`
 ```shell
 wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.8/log4j-checker-linux-amd64-v1.0.8.bin -O log4j-checker-linux-amd64-v1.0.8.bin
 chmod +x log4j-checker-linux-amd64-v1.0.8.bin
 ```
 
 ### Usage
-To scan *all* running Java processes, we recommend running the tool with root permissions:
+To scan *all* running Java processes on the current machine, we recommend running the tool with root permissions:
 ```
 Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.8.bin:
   -exclude value
