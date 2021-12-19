@@ -26,49 +26,36 @@ The log4j vulnerabilities are only relevant, in general, to machines running Jav
 To know if Java runtime is installed on the machine at question, open terminal and hit (as root): `java -version`.
 If no Java runtime is present, you can proceed to another machine.
 
-#### OpenJDK
-To automatically scan the system running Java processes, you would need *Open Java Development Kit (OpenJDK)* that packs the `jps` command-line tool, to be available on your `$PATH`. If you don't want to or can't install OpenJDK on your system, you can still run the checker tool in manual mode as [described below](#Usage).
-
-To find out if `jps` is present on your system, simply issue the command `jps -h` on the target machine's terminal.
-If `jps` is installed you would be returned with something similar to:
-```shell
-usage: jps [--help]
-       jps [-q] [-mlvV] [<hostid>]
-...
-```
-This means you can proceed to the [installation](#Installation) section below and skip the OpenJDK installation step straight to [downloading](#MyHeading) the `log4j-checker`.
-
 ### Installation
-#### Download & Extract OpenJDK
-If `jps` is not installed that means that OpenJDK is not available on your `$PATH`, and you would need to download OpenJDK.
 
-The below instructions *do not* install OpenJDK (as there is no need for actual installation), but download and extract a prepared OpenJDK binary and use it for the sole use of the `log4j-checker` tool. Feel free to delete the downloaded and extracted OpenJDK directory when you're done.
-```shell
-# for other versions and more instructions checkout: https://adoptopenjdk.net/installation.html
-wget -L https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz -O OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
-tar xzf OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz
-export PATH=$PWD/jdk-16.0.2+7/bin:$PATH
-```
+#### OpenJDK
+To automatically scan the system' running Java processes (using the packaged `jps` program), `log4j-checker` tool downloads and extracts OpenJDK17.
+If you don't want this behaviour, either:
+* Run `log4j-checker` with the arg `--no-jps-download` to avoid the download and extract and have `jps` available in your `$PATH` (manually, on your own) 
+* Run `log4j-checker` with the arg(s) `-include PATH` to not automatically detect the running Java process and provide a manual path to scan.
+
 #### <a id="MyHeading"></a> Download Latest `log4j-checker`
 ```shell
-wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.8/log4j-checker-linux-amd64-v1.0.8.bin -O log4j-checker-linux-amd64-v1.0.8.bin
-chmod +x log4j-checker-linux-amd64-v1.0.8.bin
+wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.9/log4j-checker-linux-amd64-v1.0.9.bin -O log4j-checker-linux-amd64-v1.0.9.bin
+chmod +x log4j-checker-linux-amd64-v1.0.9.bin
 ```
 
 ### Usage
 To scan *all* running Java processes on the current machine, we recommend running the tool with root permissions:
 ```
-Usage of sudo ./log4j-scanner-amd64-darwin-v1.0.8.bin:
+Usage of sudo ./log4j-checker-darwin-amd64-v1.0.9.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
-        ignore log4j 1.x versions checks
+        ignore log4j 1.x versions
   -include value
-        path to include. example: -include PATH [-include ANOTHER]
+        path to include. example -include PATH [-include ANOTHER]
   -log string
         log file to write output to
+  -no-jps-download
+        skip downloading of jps
   -verbose
-        verbose output. without this flag, no output unless vulnerable
+        no output unless vulnerable
 ```
 
 ### Issues

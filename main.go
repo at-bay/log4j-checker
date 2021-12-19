@@ -13,34 +13,13 @@ import (
 	"strings"
 )
 
-type argsList []string
-
-func (flags *argsList) String() string {
-	return fmt.Sprint(*flags)
-}
-
-func (flags *argsList) Set(value string) error {
-	*flags = append(*flags, value)
-	return nil
-}
-
-func (flags argsList) Has(path string) bool {
-	for _, exclude := range flags {
-		if path == exclude {
-			return true
-		}
-	}
-	return false
-}
-
-var (
-	excludes    argsList
-	includes    argsList
-	logFileName string
-	verbose     bool
-	ignoreV1    bool
-	FoundVln    bool
+const (
+	openJdkUrl       = `https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz`
+	openJdkFileName  = `OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz`
+	openJdkSHA256    = `6ea18c276dcbb8522feeebcfc3a4b5cb7c7e7368ba8590d3326c6c3efc5448b6`
+	jpsInOpenJdkPath = `openjdk/jdk-17.0.1+12/bin/jps`
 )
+
 var (
 	dirRe         = `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.\-]+){1,})`
 	compiledDirRe = regexp.MustCompile(dirRe)
@@ -50,6 +29,8 @@ var (
 
 	javaagentRe         = `-javaagent\:.*?=\d+\:`
 	compiledJavaAgentRe = regexp.MustCompile(javaagentRe)
+
+	sep = "/"
 )
 
 func findDirs(lines []string) []string {
@@ -225,6 +206,7 @@ func main() {
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
 	flag.BoolVar(&verbose, "verbose", false, "no output unless vulnerable")
 	flag.BoolVar(&ignoreV1, "ignore-v1", false, "ignore log4j 1.x versions")
+	flag.BoolVar(&skipJpsDownload, "no-jps-download", false, "skip downloading of jps")
 	flag.Parse()
 
 	useJps := true
@@ -244,23 +226,40 @@ func main() {
 	}
 
 	if logFileName != "" {
-		f, err := os.Create(logFileName)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Could not create log file")
-			os.Exit(2)
-		}
-		logFile = f
-		errFile = f
+		f := createLogFile()
 		defer f.Close()
+	}
+
+	var (
+		jpsInstallPath string
+		temp           string
+		err            error
+	)
+
+	if !skipJpsDownload {
+		fmt.Fprintf(os.Stdout, "downloading OpenJDK file: %s from adoptium.net\nextracted file and created temporary folders will be deleted upon checker termination\n", openJdkFileName)
+		temp, jpsInstallPath = getJps(jpsInstallPath)
+		defer func(name string) {
+			err := os.RemoveAll(name)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "failed deleting temporary folder at path: %s, with error: %s", temp, err)
+			}
+			if verbose {
+				fmt.Fprintf(os.Stdout, "deleted temporary folder at path: %s", temp)
+			}
+		}(temp)
 	}
 
 	// true, if user did NOT specify -include
 	if useJps {
-		jpsInstallPath, err := verifyJpsInstalled()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, missingJps)
-			os.Exit(1)
+		if skipJpsDownload {
+			jpsInstallPath, err = verifyJpsInstalled()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, missingJps)
+				os.Exit(1)
+			}
 		}
+
 		jpsOutputLines, _ := runJps(jpsInstallPath)
 		jars := findJars(jpsOutputLines)
 		for _, jar := range jars {
@@ -282,6 +281,45 @@ func main() {
 	} else if verbose {
 		fmt.Printf("\n%s\n%s\n", noVlnMsg, furtherInfoMsg)
 	}
+}
+
+func getJps(jpsInstallPath string) (string, string) {
+	temp := createTmpDir()
+
+	if verbose {
+		fmt.Fprintf(os.Stdout, "created tmp dir to download openjdk: %s", temp)
+	}
+	download(temp, openJdkUrl)
+	if err := unGzip(temp+sep+openJdkFileName, temp+sep+"openjdk.tar"); err != nil {
+		fmt.Fprintf(os.Stderr, "failed unzipping downloaded tgz file. error: %s", err)
+		os.Exit(1)
+	}
+	if err := untar(temp+sep+"openjdk.tar", temp+sep+"openjdk"); err != nil {
+		fmt.Fprintf(os.Stderr, "failed untarring downloaded tgz file. error: %s", err)
+		os.Exit(1)
+	}
+	jpsInstallPath = temp + sep + jpsInOpenJdkPath
+	return temp, jpsInstallPath
+}
+
+func createLogFile() *os.File {
+	f, err := os.Create(logFileName)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Could not create log file")
+		os.Exit(2)
+	}
+	logFile = f
+	errFile = f
+	return f
+}
+
+func createTmpDir() string {
+	temp, err := os.MkdirTemp("", "lo4j-checker-")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	return temp
 }
 
 var missingJps = `
