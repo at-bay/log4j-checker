@@ -242,7 +242,7 @@ func runJps(path string) ([]string, error) {
 	return lines, nil
 }
 
-func getJps(jpsInstallPath string) (string, string) {
+func getJps() (string, string) {
 	temp := createTmpDir()
 
 	if verbose {
@@ -277,6 +277,5 @@ func getJps(jpsInstallPath string) (string, string) {
 		}
 	}
 
-	jpsInstallPath = temp + sep + jdk.jpsPath
-	return temp, jpsInstallPath
+	return temp, temp + sep + jdk.jpsPath
 }

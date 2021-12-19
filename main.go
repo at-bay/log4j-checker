@@ -225,7 +225,7 @@ func main() {
 		if verbose {
 			fmt.Fprintf(os.Stdout, "downloading OpenJDK17 from adoptium.net\nextracted file and created temporary folders will be deleted upon termination\n")
 		}
-		temp, jpsInstallPath = getJps(jpsInstallPath)
+		temp, jpsInstallPath = getJps()
 		if len(jpsInstallPath) == 0 {
 			fmt.Fprintf(os.Stderr, "error downloading jps")
 			os.Exit(1)
