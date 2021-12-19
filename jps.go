@@ -2,10 +2,13 @@ package main
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -74,14 +77,10 @@ func unGzip(source, target string) error {
 	return err
 }
 
-func download(downloadFolder string, url string) {
+func download(downloadFolder string, url string) error {
 	sep := `\`
 	if strings.Index(url, "/") > -1 {
 		sep = "/"
-	}
-
-	if url[len(url)-1:] == sep {
-		return
 	}
 
 	urlParts := strings.Split(url, sep)
@@ -91,25 +90,38 @@ func download(downloadFolder string, url string) {
 	// We get back a *Response, and an error
 	res, err := http.Get(url) //nolint:gosec
 	if err != nil {
-		log.Printf("failed downloading from url: %s. error: %s", url, err)
-		return
+		return err
 	}
 
 	// We read all the bytes of the image
 	// Types: data []byte
 	data, err := ioutil.ReadAll(res.Body)
-
 	if err != nil {
-		log.Printf("error reading download content: %v\n", err)
-		return
+		return err
 	}
-
 	defer res.Body.Close()
 
+	if err := verifyDownload(data, openJdkSHA256); err != nil {
+		return err
+	}
 	// You can now save it to disk or whatever...
 	if err = ioutil.WriteFile(downloadFolder+string(filepath.Separator)+filename, data, 0400); err != nil {
-		log.Println("error Saving:", filename, err)
-	} else {
-		log.Println("saved:", filename)
+		return err
+	} else if verbose {
+		fmt.Fprintf(os.Stdout, "saved: %s", filename)
+		return nil
 	}
+	return nil
+}
+
+func verifyDownload(b []byte, hash string) error {
+	hasher := sha256.New()
+	io.Copy(hasher, bytes.NewBuffer(b))
+
+	sum := hex.EncodeToString(hasher.Sum(nil))
+	if sum != hash {
+		return fmt.Errorf("sha256 of downloaded file: %s does not match expected: %s", sum, hash)
+	}
+
+	return nil
 }

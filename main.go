@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -115,46 +114,39 @@ func verifyJpsInstalled() (string, error) {
 func runJps(path string) ([]string, error) {
 	cmd := exec.Command(path, "-l", "-v")
 	r, err := cmd.StdoutPipe()
-
 	if err != nil {
-		log.Fatal(err)
+		wrappedErr := fmt.Errorf("failed execing command: %s. error is: %w", path, err)
+		return nil, wrappedErr
 	}
 
 	var lines []string
 
 	err = cmd.Start()
 	if err != nil {
-		log.Fatalf("failed running %s. error is: %v", path, err)
-		return lines, err
+		wrappedErr := fmt.Errorf("failed running %s. error is: %w", path, err)
+		return lines, wrappedErr
 	}
 	cmd.Stderr = cmd.Stdout
-
 	// Make a new channel which will be used to ensure we get all output
 	done := make(chan struct{})
-
 	// Create a scanner which scans r in a line-by-line fashion
 	scanner := bufio.NewScanner(r)
-
 	// Use the scanner to scan the output line by line and log if it's running in a goroutine so that it doesn't block
 	go func() { // Read line by line and process it
 		for scanner.Scan() {
 			line := scanner.Text()
 			lines = append(lines, line)
 		}
-
 		// We're all done, unblock the channel
 		done <- struct{}{}
 	}()
-
 	// Start the command and check for errors
-	err = cmd.Start()
-
+	cmd.Start()
 	// Wait for all output to be processed
 	<-done
-
 	// Wait for the command to finish
-	if err = cmd.Wait(); err != nil {
-		log.Fatalf("failed reading 'jps' output with error: %v", err)
+	if err := cmd.Wait(); err != nil {
+		return nil, fmt.Errorf("failed reading 'jps' output with error: %w", err)
 	}
 
 	return lines, nil
@@ -237,7 +229,9 @@ func main() {
 	)
 
 	if !skipJpsDownload {
-		fmt.Fprintf(os.Stdout, "downloading OpenJDK file: %s from adoptium.net\nextracted file and created temporary folders will be deleted upon checker termination\n", openJdkFileName)
+		if verbose {
+			fmt.Fprintf(os.Stdout, "downloading OpenJDK file: %s from adoptium.net\nextracted file and created temporary folders will be deleted upon termination\n", openJdkFileName)
+		}
 		temp, jpsInstallPath = getJps(jpsInstallPath)
 		defer func(name string) {
 			err := os.RemoveAll(name)
@@ -260,7 +254,11 @@ func main() {
 			}
 		}
 
-		jpsOutputLines, _ := runJps(jpsInstallPath)
+		jpsOutputLines, err := runJps(jpsInstallPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed running jps scanning. error: %s", err)
+			os.Exit(1)
+		}
 		jars := findJars(jpsOutputLines)
 		for _, jar := range jars {
 			findLog4j(jar)
@@ -287,15 +285,17 @@ func getJps(jpsInstallPath string) (string, string) {
 	temp := createTmpDir()
 
 	if verbose {
-		fmt.Fprintf(os.Stdout, "created tmp dir to download openjdk: %s", temp)
+		fmt.Fprintf(os.Stdout, "created tmp dir to download openjdk: %s\n", temp)
 	}
-	download(temp, openJdkUrl)
+	if err := download(temp, openJdkUrl); err != nil {
+		fmt.Fprintf(os.Stderr, "failed downloading from url: %s. error: %s\n", openJdkUrl, err)
+	}
 	if err := unGzip(temp+sep+openJdkFileName, temp+sep+"openjdk.tar"); err != nil {
-		fmt.Fprintf(os.Stderr, "failed unzipping downloaded tgz file. error: %s", err)
+		fmt.Fprintf(os.Stderr, "failed unzipping downloaded tgz file. error: %s\n", err)
 		os.Exit(1)
 	}
 	if err := untar(temp+sep+"openjdk.tar", temp+sep+"openjdk"); err != nil {
-		fmt.Fprintf(os.Stderr, "failed untarring downloaded tgz file. error: %s", err)
+		fmt.Fprintf(os.Stderr, "failed untarring downloaded tgz file. error: %s\n", err)
 		os.Exit(1)
 	}
 	jpsInstallPath = temp + sep + jpsInOpenJdkPath
