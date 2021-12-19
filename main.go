@@ -39,7 +39,7 @@ var (
 	logFileName string
 	verbose     bool
 	ignoreV1    bool
-	foundVln    bool
+	FoundVln    bool
 )
 var (
 	dirRe         = `((?:[a-zA-Z]\:){0,1}(?:[\\/][\w.\-]+){1,})`
@@ -277,7 +277,7 @@ func main() {
 		fmt.Println("\nscan finished.")
 	}
 
-	if foundVln {
+	if FoundVln {
 		fmt.Printf("\n%s\n%s\n", foundVlnMsg, furtherInfoMsg)
 	} else if verbose {
 		fmt.Printf("\n%s\n%s\n", noVlnMsg, furtherInfoMsg)

@@ -23,28 +23,29 @@ func TestFindingJars(t *testing.T) {
 	}
 }
 
-func TestLog4J2_14_0(t *testing.T) {
-	cwd, _ := os.Getwd()
-	path := fmt.Sprintf("%s/%s", cwd, "testdata/log4j-core-2.14.0.jar")
-	file, _ := os.Open(path)
-	defer file.Close()
-	buf, _ := ioutil.ReadAll(file)
-	handleJar("", bytes.NewReader(buf), int64(len(buf)))
-	if !isVln() {
-		t.Error("should have detected vulnerability")
+func TestLog4jJars(t *testing.T) {
+	testData := []struct {
+		version string
+		vuln    bool
+	}{
+		{"2.14.0", true},
+		{"2.17.0", false},
 	}
-}
 
-func TestLog4J2_17_0(t *testing.T) {
-	cwd, _ := os.Getwd()
-	path := fmt.Sprintf("%s/%s", cwd, "testdata/log4j-core-2.17.0.jar")
-	file, _ := os.Open(path)
-	defer file.Close()
-	buf, _ := ioutil.ReadAll(file)
-	handleJar("", bytes.NewReader(buf), int64(len(buf)))
-	if isVln() {
-		t.Error("should have not detected vulnerability")
+	for _, testCase := range testData {
+		cwd, _ := os.Getwd()
+		path := fmt.Sprintf("%s/testdata/log4j-core-%s.jar", cwd, testCase.version)
+		file, _ := os.Open(path)
+		defer file.Close()
+		buf, _ := ioutil.ReadAll(file)
+		handleJar("", bytes.NewReader(buf), int64(len(buf)))
+		if FoundVln != testCase.vuln {
+			t.Errorf("version: %s should have been detected as vulnerabile: %v", testCase.version, testCase.vuln)
+		}
+		// reset
+		FoundVln = false
 	}
+
 }
 
 func TestParseDirs(t *testing.T) {

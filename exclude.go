@@ -137,14 +137,10 @@ func handleJar(path string, ra io.ReaderAt, sz int64) {
 				continue
 			}
 			if desc := isVulnerableClass(buf.Bytes(), file.Name, !ignoreV1); desc != "" {
-				foundVln = true
+				FoundVln = true
 				fmt.Fprintf(logFile, "indicator for vulnerable component found in %s (%s): %s\n", path, file.Name, desc)
 				continue
 			}
 		}
 	}
-}
-
-func isVln() bool {
-	return foundVln
 }
