@@ -13,7 +13,7 @@ func TestFindingJars(t *testing.T) {
 	found := findJars(lines)
 	expected := []string{
 		"/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar",
-		"target/log4j-checkout-1.0-SNAPSHOT.jar", "log4j-checkout-1.0-SNAPSHOT.jar",
+		"target/log4j-checkout-1.0-SNAPSHOT.jar", "log4j-checkout-1.0-SNAPSHOT.jar", `C:\Users\Administrator\Downloads\OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12\jdk-17.0.1+12\lib\jrt-fs.jar`,
 	}
 	for _, item := range expected {
 		_, exists := Find(found, item)
@@ -50,7 +50,7 @@ func TestLog4jJars(t *testing.T) {
 
 func TestParseDirs(t *testing.T) {
 	lines := getJpsLines()
-	expected := getExpecxted()
+	expected := getExpected()
 	found := findDirs(lines)
 	for _, item := range expected {
 		_, exists := Find(found, item)
@@ -70,11 +70,13 @@ func getJpsLines() []string {
 	line6 := `41946 target/log4j-checkout-1.0-SNAPSHOT.jar`
 	line7 := `20635 org.apache.catalina.startup.Bootstrap --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED -Djava.util.logging.config.file=/var/lib/tomcat9/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.awt.headless=true -XX:+UseG1GC -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -Dcatalina.base=/var/lib/tomcat9 -Dcatalina.home=/usr/share/tomcat9 -Djava.io.tmpdir=/tmp`
 	line8 := `41946 log4j-checkout-1.0-SNAPSHOT.jar`
-	lines := []string{line, line1, line2, line3, line4, line5, line6, line7, line8}
+	line9 := `1300 jdk.jcmd/sun.tools.jps.Jps -Dapplication.home=C:\Users\Administrator\Downloads\OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12\jdk-17.0.1+12 -Xms8m -Djdk.module.main=jdk.jcmd`
+	line10 := `3844  C:\Users\Administrator\Downloads\OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12\jdk-17.0.1+12\lib\jrt-fs.jar exit -Xms128m -Xmx750m -XX:ReservedCodeCacheSize=512m -XX:+IgnoreUnrecognizedVMOptions -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=50 -XX:CICompilerCount=2 -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -ea -Dsun.io.useCanonCaches=false -Djdk.http.auth.tunneling.disabledSchemes="" -Djdk.attach.allowAttachSelf=true -Djdk.module.illegalAccess.silent=true -Dkotlinx.coroutines.debug=off -Djb.vmOptionsFile=C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2021.3\bin\idea64.exe.vmoptions -Djava.system.class.loader=com.intellij.util.lang.PathClassLoader -Didea.vendor.name=JetBrains -Didea.paths.selector=IdeaIC2021.3 -Didea.platform.prefix=Idea -Didea.jre.check=true -Dsplash=true -Dide.native.launcher=true -XX:ErrorFile=C:\Users\Administrator\java_error_in_idea64_%p.log -XX:HeapDumpPath=C:\Users\Administrator\java_error_in_idea64.hprof`
+	lines := []string{line, line1, line2, line3, line4, line5, line6, line7, line8, line9, line10}
 	return lines
 }
 
-func getExpecxted() []string {
+func getExpected() []string {
 	lineExpected := []string{
 		"/DirA/DirB/ExternalProjects/log4j-checkout",
 		"/DirA/DirB/Library/Application Support/JetBrains/IdeaIC2020.3/options",
@@ -98,6 +100,8 @@ func getExpecxted() []string {
 	}
 	line5Expected := []string{"/Library/Java/JavaVirtualMachines/adoptopenjdk-15.jdk/Contents/Home"}
 	line6Expected := []string{"/tmp", "/usr/share/tomcat9", "/var/lib/tomcat9/conf/logging.properties"}
+	line9Expected := []string{`C:\Users\Administrator\Downloads\OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12\jdk-17.0.1+12`}
+	line10Expected := []string{`C:\Users\Administrator\java_error_in_idea64_%p.log`, `C:\Users\Administrator\java_error_in_idea64.hprof`}
 	var expected []string
 	expected = append(expected, lineExpected...)
 	expected = append(expected, line1Expected...)
@@ -106,6 +110,8 @@ func getExpecxted() []string {
 	expected = append(expected, line4Expected...)
 	expected = append(expected, line5Expected...)
 	expected = append(expected, line6Expected...)
+	expected = append(expected, line9Expected...)
+	expected = append(expected, line10Expected...)
 	return expected
 }
 
