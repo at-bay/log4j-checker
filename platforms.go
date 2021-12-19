@@ -24,6 +24,6 @@ var openJdkPlatforms = map[string]openJdk{
 		url:         `https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12.zip`,
 		tgzFileName: `OpenJDK17U-jdk_x64_windows_hotspot_17.0.1_12.zip`,
 		sha256:      `e5419773052ac6479ff211d5945f8625e0cdb036e69c0f71affaf02d5dc9aa0b`,
-		jpsPath:     `openjdk\jdk-17.0.1+12\bin`,
+		jpsPath:     `openjdk\jdk-17.0.1+12\bin\jps.exe`,
 	},
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"bufio"
 	"bytes"
 	"compress/gzip"
@@ -20,8 +21,8 @@ import (
 
 // unTarUnGzip takes a destination path and a reader; a tar reader loops over the tarfile
 // creating the file structure at 'dst' along the way, and writing any files
-func unTarUnGzip(dst string, r io.Reader) error {
-	gzr, err := gzip.NewReader(r)
+func unTarUnGzip(srcReader io.Reader, dst string) error {
+	gzr, err := gzip.NewReader(srcReader)
 	if err != nil {
 		return err
 	}
@@ -76,66 +77,68 @@ func unTarUnGzip(dst string, r io.Reader) error {
 	}
 }
 
-func untar(tarball, target string) error {
-	reader, err := os.Open(tarball)
+func unzip(src, dest string) error {
+	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
-	tarReader := tar.NewReader(reader)
+	defer func() {
+		if err := r.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
-	for {
-		header, err := tarReader.Next()
-		if err == io.EOF {
-			break
-		} else if err != nil {
+	os.MkdirAll(dest, 0400)
+
+	// Closure to address file descriptors issue with all the deferred .Close() methods
+	extractAndWriteFile := func(f *zip.File) error {
+		rc, err := f.Open()
+		if err != nil {
 			return err
 		}
+		defer func() {
+			if err := rc.Close(); err != nil {
+				panic(err)
+			}
+		}()
 
-		path := filepath.Join(target, header.Name)
-		info := header.FileInfo()
-		if info.IsDir() {
-			if err = os.MkdirAll(path, info.Mode()); err != nil {
+		path := filepath.Join(dest, f.Name)
+
+		// Check for ZipSlip (Directory traversal)
+		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", path)
+		}
+
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(path, f.Mode())
+		} else {
+			os.MkdirAll(filepath.Dir(path), f.Mode())
+			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
 				return err
 			}
-			continue
-		}
+			defer func() {
+				if err := f.Close(); err != nil {
+					panic(err)
+				}
+			}()
 
-		file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
-		if err != nil {
-			return err
+			_, err = io.Copy(f, rc)
+			if err != nil {
+				return err
+			}
 		}
-		_, err = io.Copy(file, tarReader)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
+		return nil
 	}
+
+	for _, f := range r.File {
+		err := extractAndWriteFile(f)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
-}
-
-func unGzip(source, target string) error {
-	reader, err := os.Open(source)
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
-
-	archive, err := gzip.NewReader(reader)
-	if err != nil {
-		return err
-	}
-	defer archive.Close()
-
-	target = filepath.Join(target, archive.Name)
-	writer, err := os.Create(target)
-	if err != nil {
-		return err
-	}
-	defer writer.Close()
-
-	_, err = io.Copy(writer, archive)
-	return err
 }
 
 func download(downloadFolder string, jdk openJdk) error {
@@ -253,14 +256,23 @@ func getJps(jpsInstallPath string) (string, string) {
 		fmt.Fprintf(os.Stderr, "failed downloading from url: %s. error: %s\n", jdk.url, err)
 	}
 
-	file, err := os.Open(temp + sep + jdk.tgzFileName)
-	if err != nil {
-		fmt.Println("Error opening file!!!")
-	}
-	defer file.Close()
+	tmpFileSrc := temp + sep + jdk.tgzFileName
+	tmpFileDst := temp + sep + "openjdk"
 	if currentOS != "windows" {
-		err := unTarUnGzip(temp+sep+"openjdk", file)
+		file, err := os.Open(tmpFileSrc)
 		if err != nil {
+			fmt.Printf("error opening file: %s. error is: %v\n", tmpFileSrc, err)
+			return "", ""
+		}
+		defer file.Close()
+		err = unTarUnGzip(file, tmpFileDst)
+		if err != nil {
+			return "", ""
+		}
+	} else {
+		sep = `\`
+		if err := unzip(tmpFileSrc, tmpFileDst); err != nil {
+			fmt.Printf("error unzipping file: %s. error is: %v\n", tmpFileSrc, err)
 			return "", ""
 		}
 	}
