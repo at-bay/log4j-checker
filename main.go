@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 )
 
@@ -62,7 +63,7 @@ var (
 	unixJarRe         = `((?:\.?/\w+.*?.[jwe]ar)|(?:\w+/\w+.*?.[jwe]ar))`
 	compiledUnixJarRe = regexp.MustCompile(unixJarRe)
 
-	unixJarRe1         = `[\w\-\.^/]+.[jwe]ar`
+	unixJarRe1         = `(?:[a-zA-Z]\:){0,1}[\w\+\-\.\\^/]+.[jwe]ar`
 	compiledUnixJarRe1 = regexp.MustCompile(unixJarRe1)
 )
 
@@ -77,6 +78,11 @@ func findJars(lines []string) []string {
 				found[stripped] = nil
 			}
 		}
+
+		if runtime.GOOS == "windows" {
+			continue
+		}
+
 		// brute force matching
 		matches = compiledUnixJarRe1.FindAllString(line, -1)
 		for _, v := range matches {
