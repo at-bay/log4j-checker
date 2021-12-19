@@ -36,14 +36,14 @@ If you don't want this behaviour, either:
 
 #### <a id="MyHeading"></a> Download Latest `log4j-checker`
 ```shell
-wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.0.9/log4j-checker-linux-amd64-v1.0.9.bin -O log4j-checker-linux-amd64-v1.0.9.bin
-chmod +x log4j-checker-linux-amd64-v1.0.9.bin
+wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.1.0/log4j-checker-linux-amd64-v1.1.0.bin -O log4j-checker-linux-amd64-v1.1.0.bin
+chmod +x log4j-checker-linux-amd64-v1.1.0.bin
 ```
 
 ### Usage
 To scan *all* running Java processes on the current machine, we recommend running the tool with root permissions:
 ```
-Usage of sudo ./log4j-checker-darwin-amd64-v1.0.9.bin:
+Usage of sudo ./log4j-checker-darwin-amd64-v1.1.0.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
