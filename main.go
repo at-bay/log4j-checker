@@ -1,22 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
-)
-
-const (
-	openJdkUrl       = `https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz`
-	openJdkFileName  = `OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz`
-	openJdkSHA256    = `6ea18c276dcbb8522feeebcfc3a4b5cb7c7e7368ba8590d3326c6c3efc5448b6`
-	jpsInOpenJdkPath = `openjdk/jdk-17.0.1+12/bin/jps`
 )
 
 var (
@@ -100,58 +91,6 @@ func findJars(lines []string) []string {
 	return distinct
 }
 
-func verifyJpsInstalled() (string, error) {
-	path, err := exec.LookPath("jps")
-	if err != nil {
-		return "", err
-	}
-	if verbose {
-		fmt.Printf("found 'jps' command at %s\n", path)
-	}
-	return path, nil
-}
-
-func runJps(path string) ([]string, error) {
-	cmd := exec.Command(path, "-l", "-v")
-	r, err := cmd.StdoutPipe()
-	if err != nil {
-		wrappedErr := fmt.Errorf("failed execing command: %s. error is: %w", path, err)
-		return nil, wrappedErr
-	}
-
-	var lines []string
-
-	err = cmd.Start()
-	if err != nil {
-		wrappedErr := fmt.Errorf("failed running %s. error is: %w", path, err)
-		return lines, wrappedErr
-	}
-	cmd.Stderr = cmd.Stdout
-	// Make a new channel which will be used to ensure we get all output
-	done := make(chan struct{})
-	// Create a scanner which scans r in a line-by-line fashion
-	scanner := bufio.NewScanner(r)
-	// Use the scanner to scan the output line by line and log if it's running in a goroutine so that it doesn't block
-	go func() { // Read line by line and process it
-		for scanner.Scan() {
-			line := scanner.Text()
-			lines = append(lines, line)
-		}
-		// We're all done, unblock the channel
-		done <- struct{}{}
-	}()
-	// Start the command and check for errors
-	cmd.Start()
-	// Wait for all output to be processed
-	<-done
-	// Wait for the command to finish
-	if err := cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("failed reading 'jps' output with error: %w", err)
-	}
-
-	return lines, nil
-}
-
 func findLog4j(root string) {
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -192,6 +131,55 @@ func findLog4j(root string) {
 	return
 }
 
+func createLogFile() *os.File {
+	f, err := os.Create(logFileName)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Could not create log file")
+		os.Exit(2)
+	}
+	logFile = f
+	errFile = f
+	return f
+}
+
+func createTmpDir() string {
+	temp, err := os.MkdirTemp("", "lo4j-checker-")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	return temp
+}
+
+func scan(useJps bool, jpsInstallPath string) {
+	// true, if user did NOT specify -include
+	var err error
+	if useJps {
+		if skipJpsDownload {
+			jpsInstallPath, err = verifyJpsInstalled()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, missingJps)
+				os.Exit(1)
+			}
+		}
+
+		jpsOutputLines, err := runJps(jpsInstallPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed running jps scanning. error: %s", err)
+			os.Exit(1)
+		}
+		jars := findJars(jpsOutputLines)
+		for _, jar := range jars {
+			findLog4j(jar)
+		}
+		includes = findDirs(jpsOutputLines)
+	}
+
+	for _, path := range includes {
+		findLog4j(path)
+	}
+}
+
 func main() {
 	flag.Var(&excludes, "exclude", "path to exclude. example: -exclude PATH [-exclude ANOTHER]")
 	flag.Var(&includes, "include", "path to include. example -include PATH [-include ANOTHER]")
@@ -225,14 +213,17 @@ func main() {
 	var (
 		jpsInstallPath string
 		temp           string
-		err            error
 	)
 
 	if !skipJpsDownload {
 		if verbose {
-			fmt.Fprintf(os.Stdout, "downloading OpenJDK file: %s from adoptium.net\nextracted file and created temporary folders will be deleted upon termination\n", openJdkFileName)
+			fmt.Fprintf(os.Stdout, "downloading OpenJDK17 from adoptium.net\nextracted file and created temporary folders will be deleted upon termination\n")
 		}
 		temp, jpsInstallPath = getJps(jpsInstallPath)
+		if len(jpsInstallPath) == 0 {
+			fmt.Fprintf(os.Stderr, "error downloading jps")
+			os.Exit(1)
+		}
 		defer func(name string) {
 			err := os.RemoveAll(name)
 			if err != nil {
@@ -244,31 +235,7 @@ func main() {
 		}(temp)
 	}
 
-	// true, if user did NOT specify -include
-	if useJps {
-		if skipJpsDownload {
-			jpsInstallPath, err = verifyJpsInstalled()
-			if err != nil {
-				fmt.Fprintln(os.Stderr, missingJps)
-				os.Exit(1)
-			}
-		}
-
-		jpsOutputLines, err := runJps(jpsInstallPath)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "failed running jps scanning. error: %s", err)
-			os.Exit(1)
-		}
-		jars := findJars(jpsOutputLines)
-		for _, jar := range jars {
-			findLog4j(jar)
-		}
-		includes = findDirs(jpsOutputLines)
-	}
-
-	for _, path := range includes {
-		findLog4j(path)
-	}
+	scan(useJps, jpsInstallPath)
 
 	if verbose {
 		fmt.Println("\nscan finished.")
@@ -279,47 +246,6 @@ func main() {
 	} else if verbose {
 		fmt.Printf("\n%s\n%s\n", noVlnMsg, furtherInfoMsg)
 	}
-}
-
-func getJps(jpsInstallPath string) (string, string) {
-	temp := createTmpDir()
-
-	if verbose {
-		fmt.Fprintf(os.Stdout, "created tmp dir to download openjdk: %s\n", temp)
-	}
-	if err := download(temp, openJdkUrl); err != nil {
-		fmt.Fprintf(os.Stderr, "failed downloading from url: %s. error: %s\n", openJdkUrl, err)
-	}
-	if err := unGzip(temp+sep+openJdkFileName, temp+sep+"openjdk.tar"); err != nil {
-		fmt.Fprintf(os.Stderr, "failed unzipping downloaded tgz file. error: %s\n", err)
-		os.Exit(1)
-	}
-	if err := untar(temp+sep+"openjdk.tar", temp+sep+"openjdk"); err != nil {
-		fmt.Fprintf(os.Stderr, "failed untarring downloaded tgz file. error: %s\n", err)
-		os.Exit(1)
-	}
-	jpsInstallPath = temp + sep + jpsInOpenJdkPath
-	return temp, jpsInstallPath
-}
-
-func createLogFile() *os.File {
-	f, err := os.Create(logFileName)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Could not create log file")
-		os.Exit(2)
-	}
-	logFile = f
-	errFile = f
-	return f
-}
-
-func createTmpDir() string {
-	temp, err := os.MkdirTemp("", "lo4j-checker-")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-	return temp
 }
 
 var missingJps = `
