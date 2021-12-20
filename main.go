@@ -243,7 +243,7 @@ func main() {
 
 	if FoundVln {
 		fmt.Printf("\n%s\n%s\n", foundVlnMsg, furtherInfoMsg)
-	} else if verbose {
+	} else {
 		fmt.Printf("\n%s\n%s\n", noVlnMsg, furtherInfoMsg)
 	}
 }
