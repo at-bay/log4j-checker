@@ -47,6 +47,10 @@ func unTarUnGzip(srcReader io.Reader, dst string) error {
 		// the following switch could also be done using fi.Mode(), not sure if there
 		// a benefit of using one vs. the other.
 		// fi := header.FileInfo()
+		// Check for ZipSlip (Directory traversal)
+		if !strings.HasPrefix(target, filepath.Clean(dst)+string(os.PathSeparator)) {
+			return fmt.Errorf("illegal file path: %s", target)
+		}
 
 		// check the file type
 		switch header.Typeflag {
