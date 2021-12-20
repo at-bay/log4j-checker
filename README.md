@@ -33,30 +33,30 @@ If no Java runtime is present, you can proceed to another machine.
 * Download the latest release:
     ```shell
     # Linux
-    wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.1.3.alpha/log4j-checker-linux-amd64-v1.1.3.alpha.bin -O log4j-checker-linux-amd64-v1.1.3.alpha.bin
+    wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.1.4.alpha/log4j-checker-linux-amd64-v1.1.4.alpha.bin -O log4j-checker-linux-amd64-v1.1.4.alpha.bin
     # Mac
-    wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.1.3.alpha/log4j-checker-darwin-amd64-v1.1.3.alpha.bin -O log4j-checker-darwin-amd64-v1.1.3.alpha.bin
+    wget -L https://github.com/at-bay/log4j-checker/releases/download/v1.1.4.alpha/log4j-checker-darwin-amd64-v1.1.4.alpha.bin -O log4j-checker-darwin-amd64-v1.1.4.alpha.bin
     ```
 * (**Important**) Verify downloaded binary integrity (compare command results with the releases page SHA256):
     ```shell
     # Linux
-    sha256sum log4j-checker-linux-amd64-v1.1.3.alpha.bin
+    sha256sum log4j-checker-linux-amd64-v1.1.4.alpha.bin
     # Mac
-    shasum -a 256 log4j-checker-darwin-amd64-v1.1.3.alpha.bin
+    shasum -a 256 log4j-checker-darwin-amd64-v1.1.4.alpha.bin
     ```
 * Make runnable:
     ```shell
     # Linux
-    chmod +x log4j-checker-linux-amd64-v1.1.3.alpha.bin
+    chmod +x log4j-checker-linux-amd64-v1.1.4.alpha.bin
     # Mac
-    chmod +x log4j-checker-darwin-amd64-v1.1.3.alpha.bin
+    chmod +x log4j-checker-darwin-amd64-v1.1.4.alpha.bin
     ```
 
 
 
 #### <a id="DownloadWindows"></a> Windows - Download Latest
 * In your browser, open the [releases](https://github.com/at-bay/log4j-checker/releases) page 
-* Click on the `log4j-checker-windows-amd64-v1.1.3.alpha.exe` file
+* Click on the `log4j-checker-windows-amd64-v1.1.4.alpha.exe` file
 * Your browser would most like notify you of the dangers of downloading exe files. Select to download anyway
 * In your browser, click on the downloaded file dropdown menu and select "Show in folder"
 * The file explorer would then open up. Click the address bar in it so that the download location would appear as a highlighted text such as: `C:\Users\Administrator\Downloads` and copy that address
@@ -65,7 +65,7 @@ If no Java runtime is present, you can proceed to another machine.
 * (**Important**) Verify the integrity of the downloaded exe file by pasting to the command prompt:
   
     ```
-    CertUtil -hashfile C:\Users\Administrator\Downloads\log4j-checker-windows-amd64-v1.1.3.alpha.exe SHA256
+    CertUtil -hashfile C:\Users\Administrator\Downloads\log4j-checker-windows-amd64-v1.1.4.alpha.exe SHA256
     ```
 
 * The result would print the SHA256 of the downloaded exe file and should match the published SHA256 of the release you've used
@@ -76,7 +76,7 @@ If no Java runtime is present, you can proceed to another machine.
 #### Linux/Mac
 To scan *all* running Java processes on the current machine, we recommend running the tool with root permissions:
 ```
-Usage of sudo ./log4j-checker-darwin-amd64-v1.1.3.alpha.bin:
+Usage of sudo ./log4j-checker-darwin-amd64-v1.1.4.alpha.bin:
   -exclude value
         path to exclude. example: -exclude PATH [-exclude ANOTHER]
   -ignore-v1
@@ -95,7 +95,7 @@ Usage of sudo ./log4j-checker-darwin-amd64-v1.1.3.alpha.bin:
 To scan *all* running Java processes on the current machine, we recommend running the tool with Administrator permissions:
 * Open `Command Prompt` as `Adminstrator`
 * Go to the tool download directory, for example: `chdir C:\Users\Administrator\Downloads`
-* Run the tool (same options as for Linux/Mac apply): `log4j-checker-windows-amd64-v1.1.3.alpha.exe` 
+* Run the tool (same options as for Linux/Mac apply): `log4j-checker-windows-amd64-v1.1.4.alpha.exe` 
 
 ### Issues
 Please report issues in the project [issues page](https://github.com/at-bay/log4j-checker/issues).
